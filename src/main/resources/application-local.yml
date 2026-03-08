@@ -1,0 +1,106 @@
+server:
+  port: 8080
+
+spring:
+  application:
+    name: codelab-backend
+  
+  datasource:
+    url: ${DB_URL}
+    username: ${DB_USERNAME}
+    password: ${DB_PASSWORD}
+    driver-class-name: com.mysql.cj.jdbc.Driver
+  
+  jpa:
+    hibernate:
+      ddl-auto: update
+    show-sql: true
+    properties:
+      hibernate:
+        format_sql: true
+  
+  servlet:
+    multipart:
+      enabled: true
+      max-file-size: 50MB
+      max-request-size: 55MB
+
+app:
+  jwt:
+    secret: ${JWT_SECRET}
+    expiration: 86400000
+    refresh-expiration: 604800000
+  frontend-url: http://localhost:5173
+  file:
+    upload-dir: ./uploads
+
+springdoc:
+  api-docs:
+    path: /v3/api-docs
+  swagger-ui:
+    path: /swagger-ui.html
+
+
+
+
+
+
+
+
+
+
+
+# spring:
+#  application:
+#    name: code-backend
+#
+#  datasource:
+#    url: jdbc:mysql://localhost:3306/codelab_db?createDatabaseIfNotExist=true&useSSL=false&serverTimezone=UTC
+#    username: ${DB_USERNAME}
+##    password: "@shish_407"
+#    password: ${DB_PASSWORD}
+#    driver-class-name: com.mysql.cj.jdbc.Driver
+#
+#  jpa:
+#    hibernate:
+#      ddl-auto: update
+#    show-sql: true              # ✅ moved INSIDE jpa:
+#    properties:
+#      hibernate:
+#        format_sql: true        # ✅ fixed: format (not formate), colon (not =)
+#
+#  security:
+#    oauth2:
+#      client:
+#        registration:
+#          google:
+##            client-id: 621219264901-b5d2nmm2vv0esjg1p98ep4upl8eal6j7.apps.googleusercontent.com
+#            client-id:  ${GOOGLE_CLIENT_ID}
+##            client-secret: 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
+#            client-secret: ${GOOGLE_CLIENT_SECRET}
+#            scope:
+#              - openid
+#              - profile
+#              - email
+#
+#jwt:
+##  secret: 404E635266556A586E3272357538782F413F4428472B4B6250645367566B5970
+#  secret: ${JWT_SECRET}
+#  access-token-expiry: 900000
+#  refresh-token-expiry: 604800000
+#
+#springdoc:                      # ✅ fixed: no space — was "spring doc:"
+#  api-docs:
+#    path: /v3/api-docs
+#  swagger-ui:
+#    path: /swagger-ui.html
+#    tags-sorter: alpha
+#
+#cors:
+#  allowed-origins: http://localhost:5173
+#
+#
+#
+
+
+
