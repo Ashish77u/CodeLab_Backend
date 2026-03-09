@@ -6,6 +6,7 @@ import com.codelab.backend.security.OAuth2SuccessHandler;
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.http.HttpMethod;
 import org.springframework.security.authentication.AuthenticationProvider;
 import org.springframework.security.config.annotation.method.configuration.EnableMethodSecurity;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
@@ -31,7 +32,9 @@ public class SecurityConfig {
             "/swagger-ui/**",            // Swagger UI
             "/swagger-ui.html",
             "/oauth2/**",                // OAuth2 redirects
-            "/login/oauth2/**"
+            "/login/oauth2/**",
+            "/uploads/**"                // ← ADD THIS
+
     };
 
     @Bean
@@ -48,18 +51,31 @@ public class SecurityConfig {
                         .sessionCreationPolicy(SessionCreationPolicy.STATELESS))
 
                 // Route-level authorization rules
+//                .authorizeHttpRequests(auth -> auth
+//                        .requestMatchers("/api/v1/me**").permitAll()
+//                        .requestMatchers(PUBLIC_URLS).permitAll()
+//                        // Public GET on projects (landing page, project details)
+//                        .requestMatchers(
+//                                org.springframework.http.HttpMethod.GET,
+//                                "/api/v1/projects/**",
+//                                "/api/v1/users/*/profile"
+//                        ).permitAll()
+//                        // Admin-only
+//                        .requestMatchers("/api/v1/admin/**").hasRole("ADMIN")
+//                        // Everything else requires login
+//                        .anyRequest().authenticated()
+//                )
+
                 .authorizeHttpRequests(auth -> auth
-                        .requestMatchers("/api/v1/me**").permitAll()
                         .requestMatchers(PUBLIC_URLS).permitAll()
-                        // Public GET on projects (landing page, project details)
-                        .requestMatchers(
-                                org.springframework.http.HttpMethod.GET,
-                                "/api/v1/projects/**",
-                                "/api/v1/users/*/profile"
+                        .requestMatchers(HttpMethod.GET,
+                                "/api/v1/me**",
+                                "/api/v1/projects",
+                                "/api/v1/projects/search",
+                                "/api/v1/projects/user/**",
+                                "/api/v1/projects/*"
                         ).permitAll()
-                        // Admin-only
                         .requestMatchers("/api/v1/admin/**").hasRole("ADMIN")
-                        // Everything else requires login
                         .anyRequest().authenticated()
                 )
 
