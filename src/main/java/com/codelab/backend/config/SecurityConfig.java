@@ -75,7 +75,17 @@ public class SecurityConfig {
                                 "/api/v1/projects/user/**",
                                 "/api/v1/projects/*"
                         ).permitAll()
+
+                        // Public GET — user profiles
+                        .requestMatchers(HttpMethod.GET,
+                                "/api/v1/users/*",           // public profile
+                                "/api/v1/users/*/projects"   // user's project list
+                        ).permitAll()
+
+                        // Only Admin Access
                         .requestMatchers("/api/v1/admin/**").hasRole("ADMIN")
+
+                        // Every else requires login
                         .anyRequest().authenticated()
                 )
 
