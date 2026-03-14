@@ -6,11 +6,6 @@ public record AuthResponse(
         String accessToken,
         String refreshToken,
         String tokenType,
+//        String email
         UserSummaryResponse user
-) {
-    // Convenience constructor — tokenType always "Bearer"
-    public AuthResponse(String accessToken, String refreshToken,
-                        UserSummaryResponse user) {
-        this(accessToken, refreshToken, "Bearer", user);
-    }
-}
+) {}

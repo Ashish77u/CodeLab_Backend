@@ -10,7 +10,7 @@ public record UserSummaryResponse(
         String email,
         String profileImageUrl,
         String role,
-        LocalDateTime joinedDate
+        LocalDateTime createdAt
 ) {}
 
 

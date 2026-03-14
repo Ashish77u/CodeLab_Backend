@@ -19,12 +19,12 @@ public class ApplicationConfig {
 
     private final UserRepository userRepository;
 
-    // Tells Spring Security HOW to load a user by "username" (email in our case)
+
     @Bean
     public UserDetailsService userDetailsService() {
-        return username -> userRepository.findByEmail(username)
-                .orElseThrow(() ->
-                        new UsernameNotFoundException("User not found: " + username));
+        return identifier -> userRepository.findByUsername(identifier)
+                .or(() -> userRepository.findByEmail(identifier))
+                .orElseThrow(() -> new UsernameNotFoundException("User not found: " + identifier));
     }
 
     // Wires UserDetailsService + PasswordEncoder together for authentication

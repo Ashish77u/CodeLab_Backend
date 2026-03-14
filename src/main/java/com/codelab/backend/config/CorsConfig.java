@@ -6,6 +6,7 @@ import org.springframework.context.annotation.Configuration;
 import org.springframework.web.cors.CorsConfiguration;
 import org.springframework.web.cors.CorsConfigurationSource;
 import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
+import org.springframework.web.filter.CorsFilter;
 
 import java.util.List;
 
@@ -16,31 +17,44 @@ public class CorsConfig {
     private String frontendUrl;
 
     @Bean
-    public CorsConfigurationSource corsConfigurationSource() {
+    public CorsFilter corsFilter() {
         CorsConfiguration config = new CorsConfiguration();
 
-        // Allow your React dev server and prod domain
+        // Allowed origins — reads from application.yml
         config.setAllowedOrigins(List.of(
-                frontendUrl,                    // from application.yml
-                "http://localhost:5173",        // Vite default
-                "http://localhost:3000"         // CRA fallback
+                frontendUrl,                    // http://localhost:5173 in dev
+                "http://localhost:5173",        // always allow local dev
+                "http://localhost:3000"         // fallback
         ));
 
+        // Allowed HTTP methods
         config.setAllowedMethods(List.of(
-                "GET", "POST", "PUT", "DELETE", "PATCH", "OPTIONS"
+                "GET", "POST", "PUT", "DELETE",
+                "PATCH", "OPTIONS"
         ));
 
-        // Allow all headers including Authorization
-        config.setAllowedHeaders(List.of("*"));
+        // Allowed headers
+        config.setAllowedHeaders(List.of(
+                "Authorization",
+                "Content-Type",
+                "Accept",
+                "Origin",
+                "X-Requested-With"
+        ));
 
-        // Must be true so Authorization header is sent
+        // Allow Authorization header in response
+        config.setExposedHeaders(List.of("Authorization"));
+
+        // Allow cookies/credentials
         config.setAllowCredentials(true);
 
         // Cache preflight response for 1 hour
         config.setMaxAge(3600L);
 
-        UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();
+        UrlBasedCorsConfigurationSource source =
+                new UrlBasedCorsConfigurationSource();
         source.registerCorsConfiguration("/**", config);
-        return source;
+
+        return new CorsFilter(source);
     }
 }

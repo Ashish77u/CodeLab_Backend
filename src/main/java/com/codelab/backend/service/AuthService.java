@@ -63,36 +63,38 @@ public class AuthService {
         String accessToken  = jwtService.generateToken(savedUser);
         String refreshToken = jwtService.generateRefreshToken(savedUser);
 
-        return new AuthResponse(accessToken, refreshToken, toSummary(savedUser));
-    }
+//        return new AuthResponse(accessToken, refreshToken, toSummary(savedUser));
+        return new AuthResponse(accessToken, refreshToken, "Bearer", toSummary(savedUser));    }
+
 
     // ── Login ─────────────────────────────────────────────────────
 
     public AuthResponse login(LoginRequest request) {
 
-        // AuthenticationManager handles credential check
-        // It calls UserDetailsService.loadUserByUsername() and BCrypt compare
-        // Throws BadCredentialsException if wrong
+        String identifier = request.email().trim();
+
+        // Try email first, then username (case-insensitive)
+        User user = userRepository.findByEmail(identifier)
+                .or(() -> userRepository.findByEmail(identifier.toLowerCase()))
+                .or(() -> userRepository.findByUsername(identifier))
+                .orElseThrow(() ->
+                        new InvalidCredentialsException("Invalid email or password"));
+
         try {
             authenticationManager.authenticate(
                     new UsernamePasswordAuthenticationToken(
-                            request.email(),
+                            user.getEmail(),
                             request.password()
                     )
             );
         } catch (BadCredentialsException e) {
-            // IMPORTANT: always use a generic message
-            // Never say "email not found" or "wrong password" separately
             throw new InvalidCredentialsException("Invalid email or password");
         }
-
-        User user = userRepository.findByEmail(request.email())
-                .orElseThrow(() -> new InvalidCredentialsException("Invalid email or password"));
 
         String accessToken  = jwtService.generateToken(user);
         String refreshToken = jwtService.generateRefreshToken(user);
 
-        return new AuthResponse(accessToken, refreshToken, toSummary(user));
+        return new AuthResponse(accessToken, refreshToken, "Bearer", toSummary(user));
     }
 
     // ── Refresh Token ─────────────────────────────────────────────
@@ -111,8 +113,10 @@ public class AuthService {
         // Issue new refresh token too (rotation for security)
         String newRefreshToken = jwtService.generateRefreshToken(user);
 
-        return new AuthResponse(newAccessToken, newRefreshToken, toSummary(user));
+//        return new AuthResponse(newAccessToken, newRefreshToken, toSummary(user));
+        return new AuthResponse(newAccessToken, newRefreshToken, "Bearer", toSummary(user));
     }
+
 
     // ── Helper ────────────────────────────────────────────────────
 
@@ -121,10 +125,12 @@ public class AuthService {
                 user.getId(),
                 user.getUsername(),
                 user.getEmail(),
-                user.getProfileImageUrl(),
-                user.getRole().name(),
-                user.getCreatedAt()
+                user.getProfileImageUrl(),   // ← profileImageUrl is 4th
+                user.getRole().name(),       // ← role is 5th
+                user.getCreatedAt()          // ← createdAt is 6th
         );
+
+
     }
 }
 

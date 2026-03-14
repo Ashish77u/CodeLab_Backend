@@ -25,10 +25,6 @@ public class JwtService {
     @Value("${app.jwt.refresh-expiration}")
     private long refreshExpiration;
 
-    // TEMPORARY — just to confirm the issue is the yml file
-//    private String secretKey = "404E635266556A586E3272357538782F413F4428472B4B6250645367566B5970";
-//    private long jwtExpiration = 86400000L;
-//    private long refreshExpiration = 604800000L;
 
     // ── Generate Tokens ───────────────────────────────────────────
 

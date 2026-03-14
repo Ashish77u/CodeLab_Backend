@@ -87,7 +87,7 @@ public class ProjectService {
     @Transactional(readOnly = true)
     public Page<ProjectCardResponse> getProjectsByUsername(
             String username, int page, int size) {
-        User user = userRepository.findByUsername(username)
+        User user = userRepository.findByEmail(username)
                 .orElseThrow(() -> new UsernameNotFoundException("User not found: " + username));
         Pageable pageable = PageRequest.of(page, size);
         return projectRepository
