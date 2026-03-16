@@ -7,6 +7,7 @@ import org.springframework.validation.FieldError;
 import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
+import org.springframework.web.servlet.resource.NoResourceFoundException;
 
 import java.time.LocalDateTime;
 import java.util.stream.Collectors;
@@ -14,6 +15,20 @@ import java.util.stream.Collectors;
 @Slf4j                    // ← this creates the 'log' variable via Lombok
 @RestControllerAdvice
 public class GlobalExceptionHandler {
+
+
+    // Ignore NoResourceFoundException for OAuth2 URLs
+// Spring Security OAuth2 handles /oauth2/** internally
+    @ExceptionHandler(NoResourceFoundException.class)
+    public ResponseEntity<Void> handleNoResource(
+            NoResourceFoundException ex,
+            HttpServletRequest request) {
+        // Let Spring Security handle OAuth2 redirects
+        if (request.getRequestURI().contains("oauth2")) {
+            return ResponseEntity.notFound().build();
+        }
+        return ResponseEntity.notFound().build();
+    }
 
     @ExceptionHandler(AppException.class)
     public ResponseEntity<ErrorResponse> handleAppException(

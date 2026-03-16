@@ -1,4 +1,4 @@
-package com.codelab.backend.security;
+package com.codelab.backend.security.oauth2;
 
 import com.codelab.backend.entity.User;
 import com.codelab.backend.repository.UserRepository;

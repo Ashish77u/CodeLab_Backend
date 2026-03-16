@@ -87,10 +87,15 @@ public class ProjectService {
     @Transactional(readOnly = true)
     public Page<ProjectCardResponse> getProjectsByUsername(
             String username, int page, int size) {
-        User user = userRepository.findByEmail(username)
-                .orElseThrow(() -> new UsernameNotFoundException("User not found: " + username));
-        Pageable pageable = PageRequest.of(page, size);
+//        User user = userRepository.findByEmail(username)
+        User user = userRepository.findByUsername(username)     // find by username
+                .orElseThrow(() -> new UsernameNotFoundException("User '@" + username + "' not found"));
+
+        Pageable pageable = PageRequest.of(page, size,
+                Sort.by("createdAt").descending());
+
         return projectRepository
+
                 .findByUploaderAndPublishedTrueOrderByCreatedAtDesc(user, pageable)
                 .map(this::toCardResponse);
     }
@@ -158,17 +163,39 @@ public class ProjectService {
                 .collect(Collectors.toSet());
     }
 
-    private ProjectResponse toProjectResponse(Project p) {
-        Set<String> tagNames = p.getTags().stream()
-                .map(Tag::getName).collect(Collectors.toSet());
-        return new ProjectResponse(
-                p.getId(), p.getTitle(), p.getDescription(), p.getAbout(),
-                p.getCoverImageUrl(), p.getZipFileName(), p.getZipFileSize(),
-                p.getUploader().getUsername(), p.getUploader().getRealName(),
-                p.getUploader().getProfileImageUrl(), tagNames,
-                p.getDownloadCount(), p.isPublished(), p.getCreatedAt(), p.getUpdatedAt()
-        );
-    }
+//    private ProjectResponse toProjectResponse(Project p) {
+//        Set<String> tagNames = p.getTags().stream()
+//                .map(Tag::getName).collect(Collectors.toSet());
+//        return new ProjectResponse(
+//                p.getId(), p.getTitle(), p.getDescription(), p.getAbout(),
+//                p.getCoverImageUrl(), p.getZipFileName(), p.getZipFileSize(),
+//                p.getUploader().getUsername(), p.getUploader().getRealName(),
+//                p.getUploader().getProfileImageUrl(), tagNames,
+//                p.getDownloadCount(), p.isPublished(), p.getCreatedAt(), p.getUpdatedAt()
+//        );
+//    }
+private ProjectResponse toProjectResponse(Project project) {
+    User uploader = project.getUploader();
+    return new ProjectResponse(
+            project.getId(),
+            project.getTitle(),
+            project.getDescription(),
+            project.getAbout(),
+            project.getCoverImageUrl(),
+            project.getZipFileName(),
+            project.getDownloadCount(),
+            project.getCreatedAt(),
+            project.getTags().stream().map(Tag::getName).toList(),
+            uploader.getUsername(),
+            uploader.getRealName(),
+            uploader.getBio(),
+            uploader.getLocation(),
+            uploader.getEducation(),
+            uploader.getWork(),
+            uploader.getProfileImageUrl(),
+            uploader.getCreatedAt()
+    );
+}
 
     private ProjectCardResponse toCardResponse(Project p) {
         Set<String> tagNames = p.getTags().stream()

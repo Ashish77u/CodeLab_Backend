@@ -2,7 +2,8 @@ package com.codelab.backend.config;
 
 
 import com.codelab.backend.security.JwtAuthFilter;
-import com.codelab.backend.security.OAuth2SuccessHandler;
+import com.codelab.backend.security.oauth2.CustomOAuth2UserService;
+import com.codelab.backend.security.oauth2.OAuth2SuccessHandler;
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -24,7 +25,8 @@ public class SecurityConfig {
 
     private final JwtAuthFilter jwtAuthFilter;
     private final AuthenticationProvider authenticationProvider;
-//    private final OAuth2SuccessHandler oAuth2SuccessHandler;
+    private final OAuth2SuccessHandler oAuth2SuccessHandler;
+    private final CustomOAuth2UserService customOAuth2UserService;
 
     private static final String[] PUBLIC_URLS = {
             "/api/v1/auth/**",           // register, login, refresh
@@ -48,23 +50,8 @@ public class SecurityConfig {
 
                 // No sessions — REST is stateless
                 .sessionManagement(session -> session
-                        .sessionCreationPolicy(SessionCreationPolicy.STATELESS))
+                        .sessionCreationPolicy(SessionCreationPolicy.IF_REQUIRED))
 
-                // Route-level authorization rules
-//                .authorizeHttpRequests(auth -> auth
-//                        .requestMatchers("/api/v1/me**").permitAll()
-//                        .requestMatchers(PUBLIC_URLS).permitAll()
-//                        // Public GET on projects (landing page, project details)
-//                        .requestMatchers(
-//                                org.springframework.http.HttpMethod.GET,
-//                                "/api/v1/projects/**",
-//                                "/api/v1/users/*/profile"
-//                        ).permitAll()
-//                        // Admin-only
-//                        .requestMatchers("/api/v1/admin/**").hasRole("ADMIN")
-//                        // Everything else requires login
-//                        .anyRequest().authenticated()
-//                )
 
                 .authorizeHttpRequests(auth -> auth
                         .requestMatchers(PUBLIC_URLS).permitAll()
@@ -73,7 +60,9 @@ public class SecurityConfig {
                                 "/api/v1/projects",
                                 "/api/v1/projects/search",
                                 "/api/v1/projects/user/**",
-                                "/api/v1/projects/*"
+                                "/api/v1/projects/*",
+                                "/oauth2/**",
+                                "/login/oauth2/**"
                         ).permitAll()
 
                         // Public GET — user profiles
@@ -93,6 +82,13 @@ public class SecurityConfig {
 //                .oauth2Login(oauth -> oauth
 //                        .successHandler(oAuth2SuccessHandler)
 //                )
+                .oauth2Login(oauth2 -> oauth2
+//                        .loginPage("/login")           // ← ADD THIS LINE
+//                        .loginPage("http://localhost:5173/login")    // ← full URL
+                        .userInfoEndpoint(userInfo -> userInfo
+                                .userService(customOAuth2UserService))
+                        .successHandler(oAuth2SuccessHandler)
+                )
 
                 // Use our DaoAuthenticationProvider
                 .authenticationProvider(authenticationProvider)

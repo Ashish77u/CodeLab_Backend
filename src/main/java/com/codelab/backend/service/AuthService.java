@@ -99,23 +99,22 @@ public class AuthService {
 
     // ── Refresh Token ─────────────────────────────────────────────
 
-    public AuthResponse refreshToken(RefreshTokenRequest request) {
-        String email = jwtService.extractEmail(request.refreshToken());
+public AuthResponse refreshToken(RefreshTokenRequest request) {
+    String username = jwtService.extractUsername(request.refreshToken()); // ← was extractEmail
 
-        User user = userRepository.findByEmail(email)
-                .orElseThrow(() -> new UsernameNotFoundException("User not found"));
+    User user = userRepository.findByUsername(username)   // ← was findByEmail
+            .orElseThrow(() ->
+                    new UsernameNotFoundException("User not found"));
 
-        if (!jwtService.isTokenValid(request.refreshToken(), user)) {
-            throw new InvalidCredentialsException("Refresh token is invalid or expired");
-        }
-
-        String newAccessToken = jwtService.generateToken(user);
-        // Issue new refresh token too (rotation for security)
-        String newRefreshToken = jwtService.generateRefreshToken(user);
-
-//        return new AuthResponse(newAccessToken, newRefreshToken, toSummary(user));
-        return new AuthResponse(newAccessToken, newRefreshToken, "Bearer", toSummary(user));
+    if (!jwtService.isTokenValid(request.refreshToken(), user)) {
+        throw new InvalidCredentialsException("Refresh token is invalid or expired");
     }
+
+    String newAccessToken  = jwtService.generateToken(user);
+    String newRefreshToken = jwtService.generateRefreshToken(user);
+
+    return new AuthResponse(newAccessToken, newRefreshToken, "Bearer", toSummary(user));
+}
 
 
     // ── Helper ────────────────────────────────────────────────────

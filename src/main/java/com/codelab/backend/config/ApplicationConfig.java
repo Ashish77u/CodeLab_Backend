@@ -26,6 +26,14 @@ public class ApplicationConfig {
                 .or(() -> userRepository.findByEmail(identifier))
                 .orElseThrow(() -> new UsernameNotFoundException("User not found: " + identifier));
     }
+//@Bean
+//public UserDetailsService userDetailsService() {
+//    // Spring Security always loads by email internally
+//    // Username→email mapping happens in AuthService.login()
+//    return email -> userRepository.findByEmail(email)
+//            .orElseThrow(() ->
+//                    new UsernameNotFoundException("User not found: " + email));
+//}
 
     // Wires UserDetailsService + PasswordEncoder together for authentication
     @Bean
