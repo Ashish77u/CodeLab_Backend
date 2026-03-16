@@ -10,6 +10,8 @@ import com.codelab.backend.dto.request.ProjectUploadRequest;
 import com.codelab.backend.dto.response.ProjectCardResponse;
 import com.codelab.backend.dto.response.ProjectResponse;
 import com.codelab.backend.entity.User;
+import com.codelab.backend.repository.ProjectRepository;
+import com.codelab.backend.repository.TagRepository;
 import com.codelab.backend.service.ProjectService;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
@@ -20,12 +22,15 @@ import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
+import java.util.List;
+
 @RestController
 @RequestMapping("/api/v1/projects")
 @RequiredArgsConstructor
 public class ProjectController {
 
     private final ProjectService projectService;
+    private final TagRepository tagRepository;
 
     // ── PUBLIC ────────────────────────────────────────────────
 
@@ -56,6 +61,12 @@ public class ProjectController {
             @RequestParam(defaultValue = "0") int page,
             @RequestParam(defaultValue = "12") int size) {
         return ResponseEntity.ok(projectService.searchProjects(q, page, size));
+    }
+
+    // get all tags
+    @GetMapping("/tags")
+    public ResponseEntity<List<String>> getAllTags() {
+        return ResponseEntity.ok(tagRepository.findAllTagNames());
     }
 
     // ── AUTHENTICATED ─────────────────────────────────────────
