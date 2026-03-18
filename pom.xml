@@ -68,6 +68,13 @@
             <scope>runtime</scope>
         </dependency>
 
+        <!-- postgresql -->
+<!--        <dependency>-->
+<!--            <groupId>org.postgresql</groupId>-->
+<!--            <artifactId>postgresql</artifactId>-->
+<!--            <scope>runtime</scope>-->
+<!--        </dependency>-->
+
         <!-- JWT — jjwt 0.12.x (3 parts required) -->
         <dependency>
             <groupId>io.jsonwebtoken</groupId>

@@ -48,6 +48,7 @@ public class Project {
     @Builder.Default
     private long downloadCount = 0;
 
+    @Column(nullable = false)
     @Builder.Default
     private boolean published = true;
 
