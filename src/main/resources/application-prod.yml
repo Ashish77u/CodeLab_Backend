@@ -50,12 +50,12 @@ spring:
 # JWT Config
 app:
   jwt:
-    secret: ${JWT_SECRET}
-    expiration: 86400000       # 24 hours in ms
-    refresh-expiration: 604800000  # 7 days in ms
-  frontend-url: http://localhost:5173
+    secret: ${APP_JWT_SECRET}
+    expiration: ${APP_JWT_EXPIRATION}
+    refresh-expiration: ${APP_JWT_REFRESH_EXPIRATION}
+  frontend-url: ${FRONTEND_URL}
   file:
-    upload-dir: ./uploads
+    upload-dir: ${APP_FILE_UPLOAD_DIR}
 
 # Swagger UI
 springdoc:
