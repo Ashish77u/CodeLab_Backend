@@ -14,7 +14,6 @@ target/
 .sts4-cache
 
 ### Keep real credentials private
-application.yml
 
 ### IntelliJ IDEA ###
 .idea
