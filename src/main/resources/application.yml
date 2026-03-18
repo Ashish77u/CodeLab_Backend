@@ -1,0 +1,78 @@
+server:
+  port: 8080
+
+spring:
+  application:
+    name: codelab-backend
+  
+  datasource:
+      url: ${CLOUD_URL}
+      username: ${DB_USERNAME}
+      password: ${DB_PASSWORD}
+      driver-class-name: com.mysql.cj.jdbc.Driver
+      hikari:
+        connection-timeout: 30000
+        maximum-pool-size: 3
+        minimum-idle: 1
+        data-source-properties:
+          useSSL: true
+          requireSSL: true
+          verifyServerCertificate: false
+  
+  jpa:
+    hibernate:
+      ddl-auto: update        # auto-creates/updates tables. Use 'validate' in prod
+    show-sql: true            # set false in prod
+    properties:
+      hibernate:
+        format_sql: true
+        dialect: org.hibernate.dialect.MySQL8Dialect
+  
+#  OAuth2 property
+  security:
+    oauth2:
+      client:
+        registration:
+          google:
+            client-id: ${GOOGLE_CLIENT_ID}
+            client-secret: ${GOOGLE_CLIENT_SECRET}
+            scope:
+              - openid
+              - email
+              - profile
+  
+  servlet:
+    multipart:
+      enabled: true
+      max-file-size: 50MB
+      max-request-size: 55MB
+
+# JWT Config
+app:
+  jwt:
+    secret: ${APP_JWT_SECRET}
+    expiration: ${APP_JWT_EXPIRATION}
+    refresh-expiration: ${APP_JWT_REFRESH_EXPIRATION}
+  frontend-url: ${FRONTEND_URL}
+  file:
+    upload-dir: ${APP_FILE_UPLOAD_DIR}
+    
+
+# Swagger UI
+springdoc:
+  api-docs:
+    path: /v3/api-docs
+  swagger-ui:
+    path: /swagger-ui.html
+    tags-sorter: alpha
+
+
+cloudinary:
+  cloud-name: ${CLOUDY_NAME}
+  api-key: ${CLOUDY_KEY}
+  api-secret: ${CLOUDY_SECRET}
+
+supabase:
+  url: ${SUPABASE_URL}
+  service-role-key: ${SUPABASE_ROLE}
+  bucket: ${SUPABASE_BUCKET}
