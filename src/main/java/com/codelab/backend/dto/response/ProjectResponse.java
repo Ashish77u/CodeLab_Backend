@@ -34,6 +34,7 @@ public record ProjectResponse(
         String about,
         String coverImageUrl,
         String zipFileName,
+        String zipFileUrl,        // ← ADD THIS
         long downloadCount,
         LocalDateTime createdAt,
         List<String> tags,

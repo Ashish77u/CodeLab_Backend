@@ -23,6 +23,7 @@ import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.util.List;
+import java.util.Map;
 
 @RestController
 @RequestMapping("/api/v1/projects")
@@ -98,15 +99,25 @@ public class ProjectController {
         return ResponseEntity.noContent().build();
     }
 
-    @GetMapping("/{id}/download")
-    public ResponseEntity<Resource> downloadProject(
-            @PathVariable Long id,
-            @AuthenticationPrincipal User currentUser) {
-        Resource resource = projectService.downloadProject(id, currentUser);
-        return ResponseEntity.ok()
-                .header(HttpHeaders.CONTENT_DISPOSITION,
-                        "attachment; filename=\"" + resource.getFilename() + "\"")
-                .contentType(MediaType.APPLICATION_OCTET_STREAM)
-                .body(resource);
-    }
+//    @GetMapping("/{id}/download")
+//    public ResponseEntity<Resource> downloadProject(
+//            @PathVariable Long id,
+//            @AuthenticationPrincipal User currentUser) {
+//        Resource resource = projectService.downloadProject(id, currentUser);
+//        return ResponseEntity.ok()
+//                .header(HttpHeaders.CONTENT_DISPOSITION,
+//                        "attachment; filename=\"" + resource.getFilename() + "\"")
+//                .contentType(MediaType.APPLICATION_OCTET_STREAM)
+//                .body(resource);
+//    }
+@GetMapping("/{id}/download")
+public ResponseEntity<Map<String, String>> downloadProject(
+        @PathVariable Long id,
+        @AuthenticationPrincipal User currentUser) {
+
+    String downloadUrl = projectService.getDownloadUrl(id, currentUser);
+
+    // Return the Cloudinary URL to frontend
+    return ResponseEntity.ok(Map.of("downloadUrl", downloadUrl));
+}
 }
