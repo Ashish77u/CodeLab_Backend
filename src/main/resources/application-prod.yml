@@ -66,7 +66,6 @@ springdoc:
     path: /swagger-ui.html
     tags-sorter: alpha
 
-
 cloudinary:
   cloud-name: ${CLOUDY_NAME}
   api-key: ${CLOUDY_KEY}
