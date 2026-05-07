@@ -9,9 +9,6 @@ spring:
       url: ${CLOUD_DB_URL}
       username: ${CLOUD_DB_USERNAME}
       password: ${CLOUD_DB_PASSWORD}
-#      url: ${DB_URL}
-#      username: ${DB_USERNAME}
-#      password: ${DB_PASSWORD}
       driver-class-name: com.mysql.cj.jdbc.Driver
       hikari:
         connection-timeout: 30000
@@ -24,8 +21,8 @@ spring:
   
   jpa:
     hibernate:
-      ddl-auto: update        # auto-creates/updates tables. Use 'validate' in prod
-    show-sql: true            # set false in prod
+      ddl-auto: update
+    show-sql: true
     properties:
       hibernate:
         format_sql: true
