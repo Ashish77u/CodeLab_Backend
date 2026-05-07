@@ -2,7 +2,7 @@ package com.codelab.backend.config;
 
 
 import com.codelab.backend.security.JwtAuthFilter;
-import com.codelab.backend.security.oauth2.CustomOAuth2UserService;
+//import com.codelab.backend.security.oauth2.CustomOAuth2UserService;
 import com.codelab.backend.security.oauth2.OAuth2SuccessHandler;
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Bean;
@@ -26,7 +26,7 @@ public class SecurityConfig {
     private final JwtAuthFilter jwtAuthFilter;
     private final AuthenticationProvider authenticationProvider;
     private final OAuth2SuccessHandler oAuth2SuccessHandler;
-    private final CustomOAuth2UserService customOAuth2UserService;
+//    private final CustomOAuth2UserService customOAuth2UserService;
 
     private static final String[] PUBLIC_URLS = {
             "/api/v1/auth/**",           // register, login, refresh
@@ -82,13 +82,13 @@ public class SecurityConfig {
 //                .oauth2Login(oauth -> oauth
 //                        .successHandler(oAuth2SuccessHandler)
 //                )
-                .oauth2Login(oauth2 -> oauth2
-//                        .loginPage("/login")           // ← ADD THIS LINE
-//                        .loginPage("http://localhost:5173/login")    // ← full URL
-                        .userInfoEndpoint(userInfo -> userInfo
-                                .userService(customOAuth2UserService))
-                        .successHandler(oAuth2SuccessHandler)
-                )
+//                .oauth2Login(oauth2 -> oauth2
+////                        .loginPage("/login")           // ← ADD THIS LINE
+////                        .loginPage("http://localhost:5173/login")    // ← full URL
+//                        .userInfoEndpoint(userInfo -> userInfo
+//                                .userService(customOAuth2UserService))
+//                        .successHandler(oAuth2SuccessHandler)
+//                )
 
                 // Use our DaoAuthenticationProvider
                 .authenticationProvider(authenticationProvider)
