@@ -6,8 +6,6 @@ spring:
     name: codelab-backend
   
   datasource:
-#    jdbc:mysql://mysql-16d1b545-ashishshahani19162-3707.f.aivencloud.com:11440/defaultdb?ssl-mode=REQUIRED&useSSL=true&requireSSL=true
-#    mysql://avnadmin:AVNS_6VY0z1Vy2FONTOQ5-fZ@mysql-16d1b545-ashishshahani19162-3707.f.aivencloud.com:11440/defaultdb?ssl-mode=REQUIRED
       url: ${CLOUD_DB_URL}
       username: ${CLOUD_DB_USERNAME}
       password: ${CLOUD_DB_PASSWORD}
