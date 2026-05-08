@@ -18,7 +18,7 @@ WORKDIR /app
 COPY --from=build /app/target/codelab-backend-0.0.1-SNAPSHOT.jar app.jar
 
 # Expose port
-EXPOSE 8080
+EXPOSE 10000
 
 # Run
 ENTRYPOINT ["java", "-Dserver.port=${PORT}", "-Dspring.profiles.active=prod", "-jar", "app.jar"]
