@@ -21,12 +21,12 @@ spring:
   
   jpa:
     hibernate:
-      ddl-auto: update        # auto-creates/updates tables. Use 'validate' in prod
+      ddl-auto: none        # auto-creates/updates tables. Use 'validate' in prod
     show-sql: true            # set false in prod
     properties:
       hibernate:
         format_sql: true
-        dialect: org.hibernate.dialect.MySQL8Dialect
+#        dialect: org.hibernate.dialect.MySQL8Dialect
   
   #  OAuth2 property
   security:
