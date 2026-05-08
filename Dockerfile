@@ -22,8 +22,15 @@ EXPOSE 10000
 
 # Run
 #ENTRYPOINT ["java", "-Dserver.port=${PORT}", "-Dspring.profiles.active=prod", "-jar", "app.jar"]
-ENTRYPOINT ["java", \
-  "-Djava.security.egd=file:/dev/./urandom", \
-  "-Dserver.port=${PORT:-10000}", \
-  "-Dspring.profiles.active=prod", \
-  "-jar", "app.jar"]
+#ENTRYPOINT ["java", \
+#  "-Djava.security.egd=file:/dev/./urandom", \
+#  "-Dserver.port=${PORT:-10000}", \
+#  "-Dspring.profiles.active=prod", \
+#  "-jar", "app.jar"]
+# Use shell form so ${PORT} expands correctly
+CMD java \
+  -Djava.security.egd=file:/dev/./urandom \
+  -Dserver.port=${PORT:-10000} \
+  -Dserver.address=0.0.0.0 \
+  -Dspring.profiles.active=prod \
+  -jar app.jar
