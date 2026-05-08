@@ -21,4 +21,9 @@ COPY --from=build /app/target/codelab-backend-0.0.1-SNAPSHOT.jar app.jar
 EXPOSE 10000
 
 # Run
-ENTRYPOINT ["java", "-Dserver.port=${PORT}", "-Dspring.profiles.active=prod", "-jar", "app.jar"]
+#ENTRYPOINT ["java", "-Dserver.port=${PORT}", "-Dspring.profiles.active=prod", "-jar", "app.jar"]
+ENTRYPOINT ["java", \
+  "-Djava.security.egd=file:/dev/./urandom", \
+  "-Dserver.port=${PORT:-10000}", \
+  "-Dspring.profiles.active=prod", \
+  "-jar", "app.jar"]

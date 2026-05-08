@@ -1,9 +1,12 @@
 server:
-  port: ${PORT:8080}
+  port: ${PORT:10000}
 
 spring:
   application:
     name: codelab-backend
+  
+  main:
+    lazy-initialization: true        # ← ADD THIS (faster startup)
   
   datasource:
     url: ${CLOUD_DB_URL}
@@ -20,13 +23,16 @@ spring:
         verifyServerCertificate: false
   
   jpa:
+    open-in-view: false              # ← ADD THIS (kills the warning + faster)
     hibernate:
-      ddl-auto: none        # auto-creates/updates tables. Use 'validate' in prod
-    show-sql: true            # set false in prod
+      #      ddl-auto: update
+      ddl-auto: none
+    #    show-sql: true
+    show-sql: false                  # ← Set false in prod (performance)
     properties:
       hibernate:
-        format_sql: true
-#        dialect: org.hibernate.dialect.MySQL8Dialect
+        #        format_sql: true
+        format_sql: false            # ← Set false in prod
   
   #  OAuth2 property
   security:
