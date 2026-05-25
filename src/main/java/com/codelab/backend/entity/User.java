@@ -31,6 +31,11 @@ public class User implements UserDetails {
     @Column(unique = true, nullable = false)
     private String username;
 
+    // Email verification
+    @Column(nullable = false)
+    @Builder.Default
+    private boolean emailVerified = false;
+
     // nullable=false BUT we allow null for OAuth2 users (no password)
     private String password;
 
@@ -41,6 +46,9 @@ public class User implements UserDetails {
     private String education;
     private String work;
     private String websiteUrl;
+
+    @Column(unique = true)
+    private String verificationToken;
 
     @Enumerated(EnumType.STRING)
     @Column(nullable = false)
@@ -58,6 +66,9 @@ public class User implements UserDetails {
     @CreationTimestamp
     @Column(name = "created_at", updatable = false)
     private LocalDateTime createdAt;
+
+    @Column
+    private LocalDateTime verificationTokenExpiry;
 
     // ── UserDetails contract ──────────────────────────────────────
     @Override
