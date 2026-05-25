@@ -1,85 +1,85 @@
-server:
-  port: ${PORT:10000}
-  address: 0.0.0.0        # ← ADD THIS LINE
-
-spring:
-  application:
-    name: codelab-backend
-  
-  main:
-    lazy-initialization: true        # ← ADD THIS (faster startup)
-  
-  datasource:
-    url: ${CLOUD_DB_URL}
-    username: ${CLOUD_DB_USERNAME}
-    password: ${CLOUD_DB_PASSWORD}
-    driver-class-name: com.mysql.cj.jdbc.Driver
-    hikari:
-      connection-timeout: 30000
-      maximum-pool-size: 3
-      minimum-idle: 1
-      data-source-properties:
-        useSSL: true
-        requireSSL: true
-        verifyServerCertificate: false
-  
-  jpa:
-    open-in-view: false              # ← ADD THIS (kills the warning + faster)
-    hibernate:
-      #      ddl-auto: update
-      ddl-auto: none
-    #    show-sql: true
-    show-sql: false                  # ← Set false in prod (performance)
-    properties:
-      hibernate:
-        #        format_sql: true
-        format_sql: false            # ← Set false in prod
-  
-  #  OAuth2 property
-  security:
-    oauth2:
-      client:
-        registration:
-          google:
-            client-id: ${GOOGLE_CLIENT_ID}
-            client-secret: ${GOOGLE_CLIENT_SECRET}
-            scope:
-              - openid
-              - email
-              - profile
-  
-  servlet:
-    multipart:
-      enabled: true
-      max-file-size: 50MB
-      max-request-size: 55MB
-
-# JWT Config
-app:
-  jwt:
-    secret: ${APP_JWT_SECRET}
-    expiration: ${APP_JWT_EXPIRATION}
-    refresh-expiration: ${APP_JWT_REFRESH_EXPIRATION}
-  frontend-url: ${APP_FRONTEND_URL}
-  file:
-    upload-dir: ${APP_FILE_UPLOAD_DIR}
-
-
-# Swagger UI
-springdoc:
-  api-docs:
-    path: /v3/api-docs
-  swagger-ui:
-    path: /swagger-ui.html
-    tags-sorter: alpha
-
-
-cloudinary:
-  cloud-name: ${CLOUDY_NAME}
-  api-key: ${CLOUDY_KEY}
-  api-secret: ${CLOUDY_SECRET}
-
-supabase:
-  url: ${SUPABASE_URL}
-  service-role-key: ${SUPABASE_ROLE}
-  bucket: ${SUPABASE_BUCKET}
+#server:
+#  port: ${PORT:10000}
+#  address: 0.0.0.0        # ← ADD THIS LINE
+#
+#spring:
+#  application:
+#    name: codelab-backend
+#
+#  main:
+#    lazy-initialization: true        # ← ADD THIS (faster startup)
+#
+#  datasource:
+#    url: ${CLOUD_DB_URL}
+#    username: ${CLOUD_DB_USERNAME}
+#    password: ${CLOUD_DB_PASSWORD}
+#    driver-class-name: com.mysql.cj.jdbc.Driver
+#    hikari:
+#      connection-timeout: 30000
+#      maximum-pool-size: 3
+#      minimum-idle: 1
+#      data-source-properties:
+#        useSSL: true
+#        requireSSL: true
+#        verifyServerCertificate: false
+#
+#  jpa:
+#    open-in-view: false              # ← ADD THIS (kills the warning + faster)
+#    hibernate:
+#      #      ddl-auto: update
+#      ddl-auto: none
+#    #    show-sql: true
+#    show-sql: false                  # ← Set false in prod (performance)
+#    properties:
+#      hibernate:
+#        #        format_sql: true
+#        format_sql: false            # ← Set false in prod
+#
+#  #  OAuth2 property
+#  security:
+#    oauth2:
+#      client:
+#        registration:
+#          google:
+#            client-id: ${GOOGLE_CLIENT_ID}
+#            client-secret: ${GOOGLE_CLIENT_SECRET}
+#            scope:
+#              - openid
+#              - email
+#              - profile
+#
+#  servlet:
+#    multipart:
+#      enabled: true
+#      max-file-size: 50MB
+#      max-request-size: 55MB
+#
+## JWT Config
+#app:
+#  jwt:
+#    secret: ${APP_JWT_SECRET}
+#    expiration: ${APP_JWT_EXPIRATION}
+#    refresh-expiration: ${APP_JWT_REFRESH_EXPIRATION}
+#  frontend-url: ${APP_FRONTEND_URL}
+#  file:
+#    upload-dir: ${APP_FILE_UPLOAD_DIR}
+#
+#
+## Swagger UI
+#springdoc:
+#  api-docs:
+#    path: /v3/api-docs
+#  swagger-ui:
+#    path: /swagger-ui.html
+#    tags-sorter: alpha
+#
+#
+#cloudinary:
+#  cloud-name: ${CLOUDY_NAME}
+#  api-key: ${CLOUDY_KEY}
+#  api-secret: ${CLOUDY_SECRET}
+#
+#supabase:
+#  url: ${SUPABASE_URL}
+#  service-role-key: ${SUPABASE_ROLE}
+#  bucket: ${SUPABASE_BUCKET}

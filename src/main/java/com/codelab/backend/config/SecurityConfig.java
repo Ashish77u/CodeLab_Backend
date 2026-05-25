@@ -3,12 +3,14 @@ package com.codelab.backend.config;
 
 import com.codelab.backend.security.JwtAuthFilter;
 //import com.codelab.backend.security.oauth2.CustomOAuth2UserService;
+import com.codelab.backend.security.oauth2.CustomOAuth2UserService;
 import com.codelab.backend.security.oauth2.OAuth2SuccessHandler;
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.http.HttpMethod;
 import org.springframework.security.authentication.AuthenticationProvider;
+import org.springframework.security.authentication.dao.DaoAuthenticationProvider;
 import org.springframework.security.config.annotation.method.configuration.EnableMethodSecurity;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
@@ -26,7 +28,7 @@ public class SecurityConfig {
     private final JwtAuthFilter jwtAuthFilter;
     private final AuthenticationProvider authenticationProvider;
     private final OAuth2SuccessHandler oAuth2SuccessHandler;
-//    private final CustomOAuth2UserService customOAuth2UserService;
+    private final CustomOAuth2UserService customOAuth2UserService;
 
     private static final String[] PUBLIC_URLS = {
             "/api/v1/auth/**",           // register, login, refresh
@@ -50,17 +52,20 @@ public class SecurityConfig {
 
                 // No sessions — REST is stateless
                 .sessionManagement(session -> session
-                        .sessionCreationPolicy(SessionCreationPolicy.IF_REQUIRED))
+//                        .sessionCreationPolicy(SessionCreationPolicy.IF_REQUIRED))
+                        .sessionCreationPolicy(SessionCreationPolicy.STATELESS))
+
 
 
                 .authorizeHttpRequests(auth -> auth
                         .requestMatchers(PUBLIC_URLS).permitAll()
                         .requestMatchers(HttpMethod.GET,
                                 "/api/v1/me**",
+                                "/api/v1/**",
                                 "/api/v1/projects",
                                 "/api/v1/projects/search",
                                 "/api/v1/projects/user/**",
-                                "/api/v1/projects/*",
+                                "/api/v1/projects/**",
                                 "/oauth2/**",
                                 "/login/oauth2/**"
                         ).permitAll()
@@ -78,10 +83,10 @@ public class SecurityConfig {
                         .anyRequest().authenticated()
                 )
 
-                // OAuth2 login configuration
-//                .oauth2Login(oauth -> oauth
-//                        .successHandler(oAuth2SuccessHandler)
-//                )
+//                 OAuth2 login configuration
+                .oauth2Login(oauth -> oauth
+                        .successHandler(oAuth2SuccessHandler)
+                )
 //                .oauth2Login(oauth2 -> oauth2
 ////                        .loginPage("/login")           // ← ADD THIS LINE
 ////                        .loginPage("http://localhost:5173/login")    // ← full URL
@@ -99,4 +104,15 @@ public class SecurityConfig {
 
         return http.build();
     }
+
+//    @Bean
+//    public AuthenticationProvider authenticationProvider() {
+//        DaoAuthenticationProvider authProvider =
+//                new DaoAuthenticationProvider();
+//
+//        authProvider.setUserDetailsService(userDetailsService);
+//        authProvider.setPasswordEncoder(passwordEncoder);
+//
+//        return authProvider;
+//    }
 }

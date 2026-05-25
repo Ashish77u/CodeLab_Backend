@@ -10,6 +10,7 @@ public record UserSummaryResponse(
         String email,
         String profileImageUrl,
         String role,
+        boolean emailVerified,    // ← Email verified
         LocalDateTime createdAt
 ) {}
 

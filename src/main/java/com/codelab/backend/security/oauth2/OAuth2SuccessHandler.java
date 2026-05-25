@@ -12,6 +12,7 @@ import org.springframework.security.web.authentication.SimpleUrlAuthenticationSu
 import org.springframework.stereotype.Component;
 
 import java.io.IOException;
+import java.security.AuthProvider;
 
 @Component
 @RequiredArgsConstructor
@@ -34,6 +35,18 @@ public class OAuth2SuccessHandler extends SimpleUrlAuthenticationSuccessHandler 
 
         User user = userRepository.findByEmail(email)
                 .orElseThrow(() -> new RuntimeException("OAuth2 user not found in DB"));
+
+//        User user = userRepository.findByEmail(email)
+//                .orElseGet(() -> {
+//                    User newUser = User.builder()
+//                            .email(email)
+//                            .username(email.split("@")[0])
+//                            .emailVerified(true)
+//                            .provider(AuthProvider.GOOGLE)
+//                            .build();
+//
+//                    return userRepository.save(newUser);
+//                });
 
         String accessToken  = jwtService.generateToken(user);
         String refreshToken = jwtService.generateRefreshToken(user);

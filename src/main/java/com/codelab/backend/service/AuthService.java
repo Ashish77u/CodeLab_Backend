@@ -14,6 +14,8 @@ import com.codelab.backend.exception.InvalidCredentialsException;
 import com.codelab.backend.exception.UsernameAlreadyExistsException;
 import com.codelab.backend.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
+import org.apache.logging.log4j.Logger;
 import org.springframework.http.HttpStatus;
 import org.springframework.security.authentication.*;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
@@ -21,8 +23,13 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.time.LocalDateTime;
+import java.util.UUID;
+
+@Slf4j          // ← this must be here
 @Service
 @RequiredArgsConstructor
+@Transactional
 public class AuthService {
 
     private final UserRepository userRepository;
@@ -30,41 +37,96 @@ public class AuthService {
     private final JwtService jwtService;
     private final AuthenticationManager authenticationManager;
 
+    private final EmailService emailService;
+//    private Logger log;
+
     // ── Register ──────────────────────────────────────────────────
 
-    @Transactional
-    public AuthResponse register(RegisterRequest request) {
+//    @Transactional
+//    public AuthResponse register(RegisterRequest request) {
+//
+//        // Guard: email uniqueness
+//        if (userRepository.existsByEmail(request.email())) {
+//            throw new EmailAlreadyExistsException(
+//                    "Email '" + request.email() + "' is already registered");
+//        }
+//
+//        // Guard: username uniqueness
+//        if (userRepository.existsByUsername(request.username())) {
+//            throw new UsernameAlreadyExistsException(
+//                    "Username '" + request.username() + "' is already taken");
+//        }
+//
+//        // Build user (password must be BCrypt-hashed)
+//        User user = User.builder()
+//                .email(request.email())
+//                .username(request.username())
+//                .password(passwordEncoder.encode(request.password()))
+//                .role(Role.USER)
+//                .provider("local")
+//                .enabled(true)
+//                .build();
+//
+//        User savedUser = userRepository.save(user);
+//
+//        // Generate tokens immediately — user is logged in after registering
+//        String accessToken  = jwtService.generateToken(savedUser);
+//        String refreshToken = jwtService.generateRefreshToken(savedUser);
+//
+////        return new AuthResponse(accessToken, refreshToken, toSummary(savedUser));
+//        return new AuthResponse(accessToken, refreshToken, "Bearer", toSummary(savedUser));    }
 
-        // Guard: email uniqueness
-        if (userRepository.existsByEmail(request.email())) {
-            throw new EmailAlreadyExistsException(
-                    "Email '" + request.email() + "' is already registered");
-        }
+@Transactional
+public AuthResponse register(RegisterRequest request) {
 
-        // Guard: username uniqueness
-        if (userRepository.existsByUsername(request.username())) {
-            throw new UsernameAlreadyExistsException(
-                    "Username '" + request.username() + "' is already taken");
-        }
+    // Check duplicates
+    if (userRepository.existsByEmail(request.email()))
+        throw new EmailAlreadyExistsException(
+                "Email already registered");
+    if (userRepository.existsByUsername(request.username()))
+        throw new UsernameAlreadyExistsException(
+                "Username already taken");
 
-        // Build user (password must be BCrypt-hashed)
-        User user = User.builder()
-                .email(request.email())
-                .username(request.username())
-                .password(passwordEncoder.encode(request.password()))
-                .role(Role.USER)
-                .provider("local")
-                .enabled(true)
-                .build();
+    // Generate verification token
+    String verificationToken = UUID.randomUUID().toString();
 
-        User savedUser = userRepository.save(user);
+    // Build user
+    User user = User.builder()
+            .email(request.email())
+            .username(request.username())
+            .password(passwordEncoder.encode(request.password()))
+            .role(Role.USER)
+            .enabled(true)
+            .emailVerified(false)              // ← not verified yet
+            .verificationToken(verificationToken)
+            .verificationTokenExpiry(
+                    LocalDateTime.now().plusHours(24))  // ← 24hr expiry
+            .build();
 
-        // Generate tokens immediately — user is logged in after registering
-        String accessToken  = jwtService.generateToken(savedUser);
-        String refreshToken = jwtService.generateRefreshToken(savedUser);
+    User saved = userRepository.save(user);
 
-//        return new AuthResponse(accessToken, refreshToken, toSummary(savedUser));
-        return new AuthResponse(accessToken, refreshToken, "Bearer", toSummary(savedUser));    }
+    // Send verification email (async — non-blocking)
+    emailService.sendVerificationEmail(
+            saved.getEmail(),
+            saved.getUsername(),
+            verificationToken
+    );
+
+    // Send welcome email (async)
+    emailService.sendWelcomeEmail(
+            saved.getEmail(),
+            saved.getUsername()
+    );
+
+    // Generate JWT tokens
+    String accessToken = jwtService.generateToken(saved);
+    String refreshToken = jwtService.generateRefreshToken(saved);
+
+//    Logger log = null;
+    log.info("User registered: {}", saved.getUsername());
+    return new AuthResponse(accessToken, refreshToken,
+            "Bearer", toSummary(saved));
+}
 
 
     // ── Login ─────────────────────────────────────────────────────
@@ -79,6 +141,14 @@ public class AuthService {
                 .or(() -> userRepository.findByUsername(identifier))
                 .orElseThrow(() ->
                         new InvalidCredentialsException("Invalid email or password"));
+
+        // Check if account is deactivated
+        if (!user.isEnabled()) {
+            throw new InvalidCredentialsException(
+                    "Account deactivated. Verification link expired. " +
+                            "Please register again.");
+        }
+
 
         try {
             authenticationManager.authenticate(
@@ -126,6 +196,7 @@ public AuthResponse refreshToken(RefreshTokenRequest request) {
                 user.getEmail(),
                 user.getProfileImageUrl(),   // ← profileImageUrl is 4th
                 user.getRole().name(),       // ← role is 5th
+                user.isEmailVerified(),
                 user.getCreatedAt()          // ← createdAt is 6th
         );
 
